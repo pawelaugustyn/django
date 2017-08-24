@@ -33,6 +33,7 @@ def index(request):
                     for tram in trams_data:
                         if line != int(tram["Lines"]):
                             continue
+                        tram["id"] = len(vehicles_online)
                         vehicles_online.append(tram)
                 except ValueError:
                     pass

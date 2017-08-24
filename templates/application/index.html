@@ -1,6 +1,7 @@
 <!DOCTYPE html>{% load static %}
-<html>
+<html xmlns="http://www.w3.org/1999/html">
     <head>
+        <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
         {% load l10n %}
         <style>
             div#map {
@@ -36,11 +37,20 @@
                 zoom: 12,
                 center: latlng
             });
+            var markers = [];
+            var infoWindows = [];
             {% for vehicle in vehicles_online %}
-            new google.maps.Marker({
+            markers[{{ vehicle.id }}] = new google.maps.Marker({
                 position: {lat: {{ vehicle.Lat|unlocalize }}, lng: {{ vehicle.Lon|unlocalize }} },
                 map: map,
                 icon: '{% static "tram-icon.png" %}'
+            });
+            infoWindows[{{ vehicle.id }}] = new google.maps.InfoWindow({
+                content: '<div><b>Linia nr {{ vehicle.Lines }}</b></div><br />'+
+                    'Ostatnia aktualizacja: {{ vehicle.Time }}'
+            });
+            markers[{{ vehicle.id }}].addListener('click', function() {
+                infoWindows[{{ vehicle.id }}].open(map, markers[{{ vehicle.id }}]);
             });
             {% endfor %}
         }
@@ -51,17 +61,26 @@
 
 
     <div id="menu">
-        <form action="/" method="post">
+    <br /><br /><br /><br />
+        <form action="/" method="post" class="pure-form pure-form-aligned"><fieldset>
             {% csrf_token %}
-            <select name="line">
-                <option>---</option>
-                {% for tram in trams_lines %}
+            <div class="pure-control-group">
+                <label for="line">Linia</label>
+                <select name="line" id="line">
+                    <option>---</option>
+                    {% for tram in trams_lines %}
                     <option value="{{ tram }}"{% if tram == request.POST.line %} selected{% endif %}>{{ tram }}</option>
-                {% endfor %}
-            </select><br />
-            <input type="submit" name="submit" value="Wyslij" />
+                    {% endfor %}
+                </select>
+            </div>
+            <br />
+            <div class="pure-controls">
+                <button type="submit" class="pure-button pure-button-primary">Wyślij</button>
+            </div>
 
-        </form>
+
+
+        </fieldset></form>
     </div>
     </body>
 </html>
