@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'application.apps.ApplicationConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,10 +52,16 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'projekt.urls'
 
+GOOGLE_MAPS_API_KEY = 'AIzaSyAr-JtoeENSAPSlmjkOz0sOJTneAfri-gc'
+GOOGLE_MAPS_CENTER_LAT = 52.229701
+GOOGLE_MAPS_CENTER_LONG = 21.0100043
+API_WARSAW_KEY = 'a5d1213c-8d8c-4658-8be6-d9d512f6561b'
+API_WARSAW_URL_TRAMS="https://api.um.warszawa.pl/api/action/busestrams_get/?resource_id=%20f2e5503e-%20927d-4ad3-9500-4ab9e55deb59&apikey="+API_WARSAW_KEY+"&type=2"
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -103,9 +110,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pl-pl'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Warsaw'
 
 USE_I18N = True
 
