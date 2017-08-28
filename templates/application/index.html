@@ -26,33 +26,45 @@
                 margin: 0;
             }
         </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     </head>
     <body>
         <div id="map"></div>
         <script>
         function initMap() {
             var latlng = new google.maps.LatLng({{ lat|unlocalize }}, {{ long|unlocalize }});
-            var mylatlng = {lat: {{ lat|unlocalize }}, lng: {{ long|unlocalize }}};
             var map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 12,
                 center: latlng
             });
             var markers = [];
+            var lines = []
             var infoWindows = [];
             {% for vehicle in vehicles_online %}
-            markers[{{ vehicle.id }}] = new google.maps.Marker({
+            markers[{{ vehicle.index }}] = new google.maps.Marker({
                 position: {lat: {{ vehicle.Lat|unlocalize }}, lng: {{ vehicle.Lon|unlocalize }} },
-                map: map,
+                map: null,
                 icon: '{% static "tram-icon.png" %}'
             });
-            infoWindows[{{ vehicle.id }}] = new google.maps.InfoWindow({
+            lines[{{ vehicle.index }}] = {{ vehicle.Lines }};
+            infoWindows[{{ vehicle.index }}] = new google.maps.InfoWindow({
                 content: '<div><b>Linia nr {{ vehicle.Lines }}</b></div><br />'+
                     'Ostatnia aktualizacja: {{ vehicle.Time }}'
             });
-            markers[{{ vehicle.id }}].addListener('click', function() {
-                infoWindows[{{ vehicle.id }}].open(map, markers[{{ vehicle.id }}]);
+            markers[{{ vehicle.index }}].addListener('click', function() {
+                infoWindows[{{ vehicle.index }}].open(map, markers[{{ vehicle.index }}]);
             });
             {% endfor %}
+            $('#line').on('change', function() {
+
+                for (i = 0; i < markers.length; i++) {
+                    if (lines[i] == this.value)
+                        markers[i].setMap(map);
+                    else
+                        markers[i].setMap(null);
+                }
+                //$('#map').hide().fadeIn(1000);
+            })
         }
         </script>
         <script async defer
@@ -67,8 +79,8 @@
             {% csrf_token %}
             <div class="pure-control-group">
                 <label for="line">Linia</label>
-                <select name="line" id="line" onchange="this.form.submit()">
-                    <option>---</option>
+                <select name="line" id="line">
+                    <option value="0">---</option>
                     {% for tram in trams_lines %}
                     <option value="{{ tram }}"{% if tram == request.POST.line %} selected{% endif %}>{{ tram }}</option>
                     {% endfor %}
