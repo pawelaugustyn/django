@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.conf import settings
 from django import template
+from re import sub
 import urllib.request
 import json
 
@@ -51,3 +52,10 @@ def index(request):
     }
     return render(request, 'application/index.html', context)
 
+
+def get_data(request):
+    data = urllib.request.urlopen(getattr(settings, "API_WARSAW_URL_TRAMS"))
+    toparse = json.load(data)
+    text = str(toparse)
+    text = sub('\'', '"', text)
+    return HttpResponse(text)

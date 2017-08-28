@@ -38,37 +38,87 @@
                 center: latlng
             });
             var markers = [];
-            var lines = []
+            var lines = [];
             var infoWindows = [];
-            {% for vehicle in vehicles_online %}
-            markers[{{ vehicle.index }}] = new google.maps.Marker({
-                position: {lat: {{ vehicle.Lat|unlocalize }}, lng: {{ vehicle.Lon|unlocalize }} },
-                map: null,
-                icon: '{% static "tram-icon.png" %}'
-            });
-            lines[{{ vehicle.index }}] = {{ vehicle.Lines }};
-            infoWindows[{{ vehicle.index }}] = new google.maps.InfoWindow({
-                content: '<div><b>Linia nr {{ vehicle.Lines }}</b></div><br />'+
-                    'Ostatnia aktualizacja: {{ vehicle.Time }}'
-            });
-            markers[{{ vehicle.index }}].addListener('click', function() {
-                infoWindows[{{ vehicle.index }}].open(map, markers[{{ vehicle.index }}]);
-            });
-            {% endfor %}
             $('#line').on('change', function() {
-
-                for (i = 0; i < markers.length; i++) {
-                    if (lines[i] == this.value)
-                        markers[i].setMap(map);
+                var val = this.value;
+                $.each(markers, function(index, marker) {
+                    if (lines[index] == val)
+                        marker.setMap(map);
                     else
-                        markers[i].setMap(null);
-                }
-                //$('#map').hide().fadeIn(1000);
-            })
+                        marker.setMap(null);
+                });
+            });
+
+            $( document ).ready(function() {
+                $.ajax({
+                        url: '/map/mapdata/',
+                        dataType: 'text',
+                        success: function(response) {
+                            var obj = $.parseJSON(response);
+                            $.each(markers, function(index, marker) {marker.setMap(null);});
+                            markers = [];
+                            lines = [];
+                            infoWindows = [];
+                            var results = obj.result;
+                            $.each(results, function(index, vehicle) {
+                                markers[index] = new google.maps.Marker({
+                                        position: {lat: parseFloat(vehicle.Lat), lng: parseFloat(vehicle.Lon) },
+                                        map: null,
+                                        icon: '{% static "tram-icon.png" %}'
+                                    });
+                                lines[index] = vehicle.Lines;
+                                infoWindows[index] = new google.maps.InfoWindow({
+                                    content: '<div><b>Linia nr '+vehicle.Lines+'</b></div><br />'+
+                                        'Ostatnia aktualizacja: '+vehicle.Time
+                                });
+                                markers[index].addListener('click', function() {
+                                    infoWindows[index].open(map, markers[index]);
+                                });
+                            });
+                        },
+                    });
+                setInterval(function(){
+                    $.ajax({
+                        url: '/map/mapdata/',
+                        dataType: 'text',
+                        success: function(response) {
+                            var obj = $.parseJSON(response);
+                            $.each(markers, function(index, marker) {marker.setMap(null);});
+                            markers = [];
+                            lines = [];
+                            infoWindows = [];
+                            var results = obj.result;
+                            var currentLine = $("#line").val();
+                            $.each(results, function(index, vehicle) {
+                                markers[index] = new google.maps.Marker({
+                                        position: {lat: parseFloat(vehicle.Lat), lng: parseFloat(vehicle.Lon) },
+                                        map: (vehicle.Lines == currentLine) ? map : null,
+                                        icon: '{% static "tram-icon.png" %}'
+                                    });
+                                lines[index] = vehicle.Lines;
+                                infoWindows[index] = new google.maps.InfoWindow({
+                                    content: '<div><b>Linia nr '+vehicle.Lines+'</b></div><br />'+
+                                        'Ostatnia aktualizacja: '+vehicle.Time
+                                });
+                                markers[index].addListener('click', function() {
+                                    infoWindows[index].open(map, markers[index]);
+                                });
+                            });
+                        },
+                    })
+                },10000)});
+
+
+
         }
         </script>
         <script async defer
             src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap">
+        </script>
+        <script type="text/javascript">
+
+
         </script>
 
 
