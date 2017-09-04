@@ -21,12 +21,25 @@
                 top: 0;
                 left: 0;
                 width: 250px;
-                background-color: white;
+                background-color: ghostwhite;
                 height: 100%;
                 margin: 0;
+                text-align: center;
+                color: navy;
+                font-weight: bold;
+
             }
         </style>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript"
+         src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js">
+        </script>
+        <script type="text/javascript"
+         src="http://tarruda.github.com/bootstrap-datetimepicker/assets/js/bootstrap-datetimepicker.min.js">
+        </script>
+        <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" media="screen"
+        href="http://tarruda.github.com/bootstrap-datetimepicker/assets/css/bootstrap-datetimepicker.min.css">
     </head>
     <body>
         <div id="map"></div>
@@ -98,7 +111,7 @@
                                     });
                                 lines[index] = vehicle.Lines;
                                 infoWindows[index] = new google.maps.InfoWindow({
-                                    content: '<div><b>Linia nr '+vehicle.Lines+'</b></div><br />'+
+                                    content: '<div>Linia nr '+vehicle.Lines+'</div><br />'+
                                         'Ostatnia aktualizacja: '+vehicle.Time
                                 });
                                 markers[index].addListener('click', function() {
@@ -108,77 +121,61 @@
                         },
                     })
                 },10000)});
-
-
-
         }
         </script>
         <script async defer
             src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap">
         </script>
-        <script type="text/javascript">
-
-
-        </script>
-
-
-    <div id="menu">
-    <img src={% static "logo.jpg" %}>
-        <br /><br /><br /><br />
-    <center><font face="Arial">Aktualna data</font><center/>
-    <br/>
-
-    <html>
-  <head>
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" media="screen"
-     href="http://tarruda.github.com/bootstrap-datetimepicker/assets/css/bootstrap-datetimepicker.min.css">
-  </head>
-  <body>
-    <div id="datetimepicker" class="input-append date">
-      <input type="text"></input>
-      <span class="add-on">
-        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-      </span>
-    </div>
-    <script type="text/javascript"
-     src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js">
-    </script>
-    <script type="text/javascript"
-     src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js">
-    </script>
-    <script type="text/javascript"
-     src="http://tarruda.github.com/bootstrap-datetimepicker/assets/js/bootstrap-datetimepicker.min.js">
-    </script>
-    <script type="text/javascript"
-     src="http://tarruda.github.com/bootstrap-datetimepicker/assets/js/bootstrap-datetimepicker.pt-BR.js">
-    </script>
-    <script type="text/javascript">
-      $('#datetimepicker').datetimepicker({
-        format: 'dd/MM/yyyy hh:mm:ss',
-        language: 'pt-PL'
-      });
-    </script>
-  </body>
-<html>
-    <br/><br/>
-
-        <form action="/" method="post" class="pure-form pure-form-aligned"><fieldset>
-            {% csrf_token %}
-            <div class="pure-control-group">
-                <label for="line">Linia</label>
+            <div id="menu">
+            <img src={% static "logo.jpg" %}>
+            <br/><br/>
+            <div><img src={% static "tram-icon.png" %}>
+                <u><i><font color="black">Aktualna pozycja tramwajów</font></i></u>
+                <br>Wybierz linię</div>
                 <select name="line" id="line">
                     <option value="0">---</option>
                     {% for tram in trams_lines %}
                     <option value="{{ tram }}"{% if tram == request.POST.line %} selected{% endif %}>{{ tram }}</option>
                     {% endfor %}
                 </select>
-            </div>
+            <br /><br/><br/>
+                <div><img src={% static "small_tram_station_icon.png" %}> Wybierz przystanek</div>
+                <select name="trainstop" id="trainstop">
+                    <option value="0">---</option>
+                    {% for tram in trams_lines %}
+                    <option value="{{ tram }}"{% if tram == request.POST.line %} selected{% endif %}>{{ tram }}</option>
+                    {% endfor %}
+                </select>
             <br />
-
-
-
-        </fieldset></form>
-    </div>
+                <div>Wybierz datę</div>
+                <div id="datetimepicker" class="input-append date">
+                    <input type="text" />
+                        <span class="add-on">
+                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                        </span>
+                        <script type="text/javascript">
+                            $('#datetimepicker').datetimepicker({
+                                format: 'dd/MM/yyyy hh:mm:ss'
+                            });
+                            $( document ).ready(function() {
+                                $('#datetimepicker').data('datetimepicker').setDate($.now());
+                                 $('#setactualdate').click(function () {
+                                    $('#datetimepicker').data('datetimepicker').setDate($.now())
+                                 })
+                            });
+                        </script>
+                </div>
+                <form action="/" method="post" class="pure-form"><fieldset>
+                    {% csrf_token %}
+                    <div id="setactualdate" class="pure-button pure-button-primary">Aktualna data</div>
+                    <br/><br/><br/><br/><br>
+                    <img src={% static "timetable.png" %}>
+                    <div id="setactualposition" class="pure-button pure-button-primary" style="background-color: black">Rozkład jazdy<br>tramwajów</div>
+                    <br/><br/>
+                    <img src={% static "red_tram_icon.png" %}>
+                    <div id="setactualposition" class="pure-button pure-button-primary" style="background-color: crimson">Przewidywana<br>pozycja tramwajów</div>
+                    <br/>
+                </fieldset></form>
+            </div>
     </body>
 </html>
