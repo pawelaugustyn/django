@@ -48,78 +48,99 @@
             var latlng = new google.maps.LatLng({{ lat|unlocalize }}, {{ long|unlocalize }});
             var map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 12,
-                center: latlng
+                center: latlng,
+                fullscreenControl: false,
+                streetViewControl: false,
+                mapTypeControl: false
             });
             var markers = [];
             var lines = [];
             var infoWindows = [];
+            var stop_marker = new google.maps.Marker({});
+            var stop_infoWindow = new google.maps.InfoWindow({});
             $('#line').on('change', function() {
+                nullStationMarker();
                 var val = this.value;
-                $.each(markers, function(index, marker) {
-                    if (lines[index] == val)
-                        marker.setMap(map);
-                    else
-                        marker.setMap(null);
+                get_buses_markers();
+                $.ajax({
+                    url: '/map/mapdata/stops/'+val+'/',
+                    dataType: 'text',
+                    success: function(response) {
+                        var obj = $.parseJSON(response);
+                        $("#trainstop").empty();
+                        $("#trainstop").append(new Option("---", "0"));
+                        var results = obj.result;
+                        $.each(results, function(index, stop) {$("#trainstop").append(new Option(stop.Name, stop.Number));});
+                    }
                 });
             });
 
-            $( document ).ready(function() {
+            $('#trainstop').on('change', function () {
+                var val = this.value;
+                nullStationMarker();
+                if (val == 0)
+                    return 0;
                 $.ajax({
-                        url: '/map/mapdata/',
-                        dataType: 'text',
-                        success: function(response) {
-                            var obj = $.parseJSON(response);
-                            $.each(markers, function(index, marker) {marker.setMap(null);});
-                            markers = [];
-                            lines = [];
-                            infoWindows = [];
-                            var results = obj.result;
-                            $.each(results, function(index, vehicle) {
-                                markers[index] = new google.maps.Marker({
-                                        position: {lat: parseFloat(vehicle.Lat), lng: parseFloat(vehicle.Lon) },
-                                        map: null,
-                                        icon: '{% static "tram-icon.png" %}'
-                                    });
-                                lines[index] = vehicle.Lines;
-                                infoWindows[index] = new google.maps.InfoWindow({
-                                    content: '<div><b>Linia nr '+vehicle.Lines+'</b></div><br />'+
-                                        'Ostatnia aktualizacja: '+vehicle.Time
+                    url: '/map/mapdata/stops/'+$('#line').val()+'/'+val+'/',
+                    dataType: 'text',
+                    success: function(response) {
+                        var obj = $.parseJSON(response);
+                        var stop = obj.result;
+                        stop_marker = new google.maps.Marker({
+                            position: {lat: parseFloat(stop.Y), lng: parseFloat(stop.X) },
+                            map: map,
+                            icon: '{% static "tram_station_icon.png" %}'
+                        });
+                        stop_infoWindow = new google.maps.InfoWindow({
+                            content: '<div><b>'+stop.Name+'</b></div><br />'+
+                                'Numer przystanku: '+stop.Number
+                        });
+                        stop_marker.addListener('click', function() {
+                           stop_infoWindow.open(map, stop_marker);
+                        });
+                    }
+                });
+            });
+
+            function nullStationMarker() {
+                stop_marker.setMap(null);
+                stop_infoWindow = false;
+            }
+
+            function get_buses_markers() {
+                $.ajax({
+                    url: '/map/mapdata/trams/'+$("#line").val()+'/',
+                    dataType: 'text',
+                    success: function(response) {
+                        var obj = $.parseJSON(response);
+                        $.each(markers, function(index, marker) {marker.setMap(null);});
+                        markers = [];
+                        lines = [];
+                        infoWindows = [];
+                        var results = obj.result;
+                        $.each(results, function(index, vehicle) {
+                            markers[index] = new google.maps.Marker({
+                                    position: {lat: parseFloat(vehicle.Lat), lng: parseFloat(vehicle.Lon) },
+                                    map: map,
+                                    icon: '{% static "tram-icon.png" %}'
                                 });
-                                markers[index].addListener('click', function() {
-                                    infoWindows[index].open(map, markers[index]);
-                                });
+                            lines[index] = vehicle.Lines;
+                            infoWindows[index] = new google.maps.InfoWindow({
+                                content: '<div><b>Linia nr '+vehicle.Lines+'</b></div><br />'+
+                                    'Ostatnia aktualizacja: '+vehicle.Time
                             });
-                        },
-                    });
+                            markers[index].addListener('click', function() {
+                                infoWindows[index].open(map, markers[index]);
+                            });
+                        });
+                    }
+                });
+            }
+
+            $( document ).ready(function() {
+                get_buses_markers();
                 setInterval(function(){
-                    $.ajax({
-                        url: '/map/mapdata/',
-                        dataType: 'text',
-                        success: function(response) {
-                            var obj = $.parseJSON(response);
-                            $.each(markers, function(index, marker) {marker.setMap(null);});
-                            markers = [];
-                            lines = [];
-                            infoWindows = [];
-                            var results = obj.result;
-                            var currentLine = $("#line").val();
-                            $.each(results, function(index, vehicle) {
-                                markers[index] = new google.maps.Marker({
-                                        position: {lat: parseFloat(vehicle.Lat), lng: parseFloat(vehicle.Lon) },
-                                        map: (vehicle.Lines == currentLine) ? map : null,
-                                        icon: '{% static "tram-icon.png" %}'
-                                    });
-                                lines[index] = vehicle.Lines;
-                                infoWindows[index] = new google.maps.InfoWindow({
-                                    content: '<div>Linia nr '+vehicle.Lines+'</div><br />'+
-                                        'Ostatnia aktualizacja: '+vehicle.Time
-                                });
-                                markers[index].addListener('click', function() {
-                                    infoWindows[index].open(map, markers[index]);
-                                });
-                            });
-                        },
-                    })
+                    get_buses_markers()
                 },10000)});
         }
         </script>
@@ -132,7 +153,7 @@
             <div><img src={% static "tram-icon.png" %}>
                 <u><i><font color="black">Aktualna pozycja tramwajów</font></i></u>
                 <br>Wybierz linię</div>
-                <select name="line" id="line">
+                <select name="line" id="line" title="Line number">
                     <option value="0">---</option>
                     {% for tram in trams_lines %}
                     <option value="{{ tram }}"{% if tram == request.POST.line %} selected{% endif %}>{{ tram }}</option>
@@ -140,11 +161,7 @@
                 </select>
             <br /><br/><br/>
                 <div><img src={% static "small_tram_station_icon.png" %}> Wybierz przystanek</div>
-                <select name="trainstop" id="trainstop">
-                    <option value="0">---</option>
-                    {% for tram in trams_lines %}
-                    <option value="{{ tram }}"{% if tram == request.POST.line %} selected{% endif %}>{{ tram }}</option>
-                    {% endfor %}
+                <select name="trainstop" id="trainstop" title="Station name">
                 </select>
             <br />
                 <div>Wybierz datę</div>

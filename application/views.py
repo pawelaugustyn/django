@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.conf import settings
 from django import template
 from re import sub
@@ -53,9 +53,40 @@ def index(request):
     return render(request, 'application/index.html', context)
 
 
-def get_data(request):
+def get_trams_per_line(request, tram_id):
     data = urllib.request.urlopen(getattr(settings, "API_WARSAW_URL_TRAMS"))
     toparse = json.load(data)
-    text = str(toparse)
-    text = sub('\'', '"', text)
-    return HttpResponse(text)
+    trams_list = dict()
+    trams_list['result'] = []
+    for tram in toparse['result']:
+        if tram['Lines'] == tram_id:
+            trams_list['result'].append(tram)
+    return HttpResponse(json.dumps(trams_list))
+
+
+def get_tram_stations_per_line(request, tram_id):
+    data = open('application/static/tramstations.json', 'r')
+    toparse = json.load(data)
+    if tram_id not in toparse:
+        raise Http404('Something went wrong!')
+    to_return = dict()
+    to_return['result'] = toparse[tram_id]
+    return HttpResponse(json.dumps(to_return))
+
+
+def get_stop_coords(request, tram_id, stop_nr):
+    data = open('application/static/tramstations.json', 'r')
+    toparse = json.load(data)
+    loaded_stop = None
+    if tram_id not in toparse:
+        raise Http404('Something went wrong!')
+    toparse = toparse[tram_id]
+    for stop in toparse:
+        if stop['Number'] == stop_nr:
+            loaded_stop = dict()
+            loaded_stop['result'] = stop
+            break
+    if loaded_stop is not None:
+        return HttpResponse(json.dumps(loaded_stop))
+    else:
+        Http404('That train doesn\'t stop on specified station.')
