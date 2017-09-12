@@ -1,17 +1,16 @@
 import re
+import json
 
-to_parse = open("RA170828.TXT", "r")
+to_parse = open("RA170909.TXT", "r")
 
 lines_numbers = []
-
 
 class ParseLine:
     def __init__(self):
         pass
 
-    trams_lines_list = ['1', '2', '3', '4', '7', '9', '10', '13', '14', '15', '17', '18', '20', '22', '23', '24', '25',
-                        '26', '27', '31', '33', '35', '44', '71', 'T']
-    trams_stops = []
+    trams_lines_list = ['1', '2', '3', '4', '7', '9', '10', '13', '14', '15', '17', '18', '20', '22', '23', '24', '25', '26', '27', '31', '33', '35', '44', '71', 'T']
+    trams_stops = dict()
 
     def GetStationName(self, line):
         name = re.sub(" +", " ", line)
@@ -29,6 +28,11 @@ class ParseLine:
         coords = coords.split(" ")
         return coords[0], coords[1]
 
+    def GetStationSuperId(self, line):
+        coords = re.sub(" +", " ", line)
+        coords = re.sub(r"([0-9]{6}).*", r"\g<1>", coords)
+        return coords
+
     def CheckIfTramLine(self, line, stationid, coords, stationname):
         lines = re.sub(" +", " ", line)
         lines = lines.split(":")[1].lstrip(" ")
@@ -36,23 +40,26 @@ class ParseLine:
 
         for line in lines:
             if line in self.trams_lines_list:
+                if line not in self.trams_stops:
+                    self.trams_stops[line] = []
                 stop = dict()
                 stop["Name"] = stationname
                 stop["Number"] = stationid
-                stop["Line"] = line
                 stop["Y"] = coords[0]
                 stop["X"] = coords[1]
-                self.trams_stops.append(stop)
+                self.trams_stops[line].append(stop)
 
         if lines in self.trams_lines_list:
             return True
         return False
 
 
+
 start_parsing = False
 parser = ParseLine()
 stationid = None
 stationname = None
+stationSuperId = None
 coords = None
 for line in to_parse:
     if not start_parsing and "*ZP" in line:
@@ -61,20 +68,24 @@ for line in to_parse:
     if not start_parsing:
         continue
 
-    diff = len(line) - len(line.lstrip(" "))
+    indentation = len(line) - len(line.lstrip(" "))
     line = line.rstrip("\n").lstrip(" ")
 
-    if diff == 3:
+    if indentation == 3:
         stationid = parser.GetStationNumber(line)
         stationname = parser.GetStationName(line)
 
-    if diff == 9:
+    if indentation == 9:
         coords = parser.GetStationCoords(line)
+        stationSuperId = parser.GetStationSuperId(line)
 
-    if diff == 12:
-        parser.CheckIfTramLine(line, stationid, coords, stationname)
+    if indentation == 12:
+        parser.CheckIfTramLine(line, stationSuperId, coords, stationname)
 
     if "#ZP" in line:
         break
+to_parse.close()
 
-print(parser.trams_stops)
+result = open("tramstations.json", mode='w', encoding='utf-8')
+result.write(json.dumps(parser.trams_stops))
+result.close()

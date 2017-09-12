@@ -73,6 +73,17 @@
                         $.each(results, function(index, stop) {$("#trainstop").append(new Option(stop.Name, stop.Number));});
                     }
                 });
+                $.ajax({
+                    url: '/map/mapdata/directions/'+val+'/',
+                    dataType: 'text',
+                    success: function(response) {
+                        var obj = $.parseJSON(response);
+                        $("#direction").empty();
+                        $("#direction").append(new Option("---", ""));
+                        var results = obj.result;
+                        $.each(results, function(index, stop) {$("#direction").append(new Option(stop.Direction, stop.Symbol));});
+                    }
+                });
             });
 
             $('#trainstop').on('change', function () {
@@ -102,12 +113,21 @@
                 });
             });
 
+
             function nullStationMarker() {
                 stop_marker.setMap(null);
                 stop_infoWindow = false;
             }
 
             function get_buses_markers() {
+                if ($("#line").val() == 0)
+                {
+                    if (markers.length > 0) {
+                        $.each(markers, function(index, marker) {marker.setMap(null);});
+                        markers = [];
+                    }
+                    return;
+                }
                 $.ajax({
                     url: '/map/mapdata/trams/'+$("#line").val()+'/',
                     dataType: 'text',
@@ -165,11 +185,7 @@
                 </select>
             <br />
                 <div><img src={% static "filled_arrow.png" %}> Wybierz kierunek</div>
-                <select name="destination" id="destination">
-                    <option value="0">---</option>
-                    {% for tram in trams_lines %}
-                    <option value="{{ tram }}"{% if tram == request.POST.line %} selected{% endif %}>{{ tram }}</option>
-                    {% endfor %}
+                <select name="direction" id="direction" title="Direction">
                 </select>
             <br />
                 <div>Wybierz datę</div>

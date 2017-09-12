@@ -90,3 +90,13 @@ def get_stop_coords(request, tram_id, stop_nr):
         return HttpResponse(json.dumps(loaded_stop))
     else:
         Http404('That train doesn\'t stop on specified station.')
+
+
+def get_available_directions(request, tram_id):
+    data = open('application/static/directions.json', 'r')
+    toparse = json.load(data)
+    if tram_id not in toparse:
+        raise Http404('Something went wrong!')
+    to_return = dict()
+    to_return['result'] = toparse[tram_id]
+    return HttpResponse(json.dumps(to_return))

@@ -1,0 +1,191 @@
+{
+	"1": [{
+		"Symbol": "TO-ANN",
+		"Direction": "Annopol"
+	}, {
+		"Symbol": "TO-BAN",
+		"Direction": "Banacha"
+	}, {
+		"Symbol": "TO-BANZ",
+		"Direction": "Banacha"
+	}, {
+		"Symbol": "TO-ZEW",
+		"Direction": "\u017bera\u0144 Wschodni"
+	}],
+	"2": [{
+		"Symbol": "TP-MMLA",
+		"Direction": "Metro M\u0142ociny"
+	}, {
+		"Symbol": "TP-MMLB",
+		"Direction": "Metro M\u0142ociny"
+	}, {
+		"Symbol": "TP-NWDA",
+		"Direction": "Nowodwory"
+	}, {
+		"Symbol": "TP-TAKB",
+		"Direction": "Tarchomin Ko\u015bcielny"
+	}],
+	"3": [{
+		"Symbol": "TP-ANN",
+		"Direction": "Annopol"
+	}, {
+		"Symbol": "TP-GCW",
+		"Direction": "Goc\u0142awek"
+	}],
+	"4": [{
+		"Symbol": "TP-WYS",
+		"Direction": "Wy\u015bcigi"
+	}, {
+		"Symbol": "TP-ZEW",
+		"Direction": "\u017bera\u0144 Wschodni"
+	}],
+	"7": [{
+		"Symbol": "TP-KAW",
+		"Direction": "Kaw\u0119czy\u0144ska-Bazylika"
+	}, {
+		"Symbol": "TP-OKE",
+		"Direction": "P+R Al.Krakowska"
+	}],
+	"9": [{
+		"Symbol": "TP-GCW",
+		"Direction": "Goc\u0142awek"
+	}, {
+		"Symbol": "TP-OKE",
+		"Direction": "P+R Al.Krakowska"
+	}, {
+		"Symbol": "TP-OKE01",
+		"Direction": "P+R Al.Krakowska"
+	}, {
+		"Symbol": "TP-WIAZN",
+		"Direction": "Wiatraczna"
+	}],
+	"10": [{
+		"Symbol": "TP-GOR",
+		"Direction": "Os.G\u00f3rczewska"
+	}, {
+		"Symbol": "TP-WYS",
+		"Direction": "Wy\u015bcigi"
+	}],
+	"11": [{
+		"Symbol": "TP-MML",
+		"Direction": "Metro M\u0142ociny"
+	}, {
+		"Symbol": "TP-NAR",
+		"Direction": "pl.Narutowicza"
+	}],
+	"13": [{
+		"Symbol": "TP-CMW",
+		"Direction": "Cm.Wolski"
+	}, {
+		"Symbol": "TP-KAW",
+		"Direction": "Kaw\u0119czy\u0144ska-Bazylika"
+	}],
+	"14": [{
+		"Symbol": "TP-BAN",
+		"Direction": "Banacha"
+	}, {
+		"Symbol": "TP-WIL",
+		"Direction": "Metro Wilanowska"
+	}],
+	"15": [{
+		"Symbol": "TP-MPT",
+		"Direction": "Marymont-Potok"
+	}, {
+		"Symbol": "TP-OKE",
+		"Direction": "P+R Al.Krakowska"
+	}],
+	"17": [{
+		"Symbol": "TP-TAK",
+		"Direction": "Tarchomin Ko\u015bcielny"
+	}, {
+		"Symbol": "TP-WOR",
+		"Direction": "Woronicza"
+	}],
+	"18": [{
+		"Symbol": "TO-MRM",
+		"Direction": "Metro Marymont"
+	}, {
+		"Symbol": "TO-WOR",
+		"Direction": "Woronicza"
+	}],
+	"20": [{
+		"Symbol": "TO-BOE",
+		"Direction": "Boernerowo"
+	}, {
+		"Symbol": "TO-ZOO",
+		"Direction": "Ratuszowa-ZOO"
+	}],
+	"22": [{
+		"Symbol": "TP-PIA",
+		"Direction": "Piaski"
+	}, {
+		"Symbol": "TP-WIA",
+		"Direction": "Wiatraczna"
+	}],
+	"23": [{
+		"Symbol": "TP-NBM",
+		"Direction": "Nowe Bemowo"
+	}, {
+		"Symbol": "TP-STA",
+		"Direction": "Czynszowa"
+	}],
+	"24": [{
+		"Symbol": "TP-GCW",
+		"Direction": "Goc\u0142awek"
+	}, {
+		"Symbol": "TP-NBM",
+		"Direction": "Nowe Bemowo"
+	}],
+	"25": [{
+		"Symbol": "TP-ANN",
+		"Direction": "Annopol"
+	}, {
+		"Symbol": "TP-BAN",
+		"Direction": "Banacha"
+	}],
+	"26": [{
+		"Symbol": "TP-GOR",
+		"Direction": "Os.G\u00f3rczewska"
+	}, {
+		"Symbol": "TP-WIA",
+		"Direction": "Wiatraczna"
+	}],
+	"27": [{
+		"Symbol": "TO-CMW",
+		"Direction": "Cm.Wolski"
+	}, {
+		"Symbol": "TO-MML",
+		"Direction": "Metro M\u0142ociny"
+	}],
+	"31": [{
+		"Symbol": "TP-RZM",
+		"Direction": "Rzymowskiego"
+	}, {
+		"Symbol": "TP-WIE",
+		"Direction": "Metro Wierzbno"
+	}],
+	"33": [{
+		"Symbol": "TP-KIE",
+		"Direction": "Kielecka"
+	}, {
+		"Symbol": "TP-MML",
+		"Direction": "Metro M\u0142ociny"
+	}],
+	"35": [{
+		"Symbol": "TP-NBM",
+		"Direction": "Nowe Bemowo"
+	}, {
+		"Symbol": "TP-WYS",
+		"Direction": "Wy\u015bcigi"
+	}],
+	"71": [{
+		"Symbol": "TP-BAN",
+		"Direction": "Banacha"
+	}, {
+		"Symbol": "TP-GOR",
+		"Direction": "Os.G\u00f3rczewska"
+	}, {
+		"Symbol": "TP-GOR5",
+		"Direction": "Os.G\u00f3rczewska"
+	}]
+}
