@@ -159,9 +159,17 @@
                     <option value="{{ tram }}"{% if tram == request.POST.line %} selected{% endif %}>{{ tram }}</option>
                     {% endfor %}
                 </select>
-            <br /><br/><br/>
+            <br /><br/>
                 <div><img src={% static "small_tram_station_icon.png" %}> Wybierz przystanek</div>
                 <select name="trainstop" id="trainstop" title="Station name">
+                </select>
+            <br />
+                <div><img src={% static "filled_arrow.png" %}> Wybierz kierunek</div>
+                <select name="destination" id="destination">
+                    <option value="0">---</option>
+                    {% for tram in trams_lines %}
+                    <option value="{{ tram }}"{% if tram == request.POST.line %} selected{% endif %}>{{ tram }}</option>
+                    {% endfor %}
                 </select>
             <br />
                 <div>Wybierz datę</div>
@@ -185,13 +193,12 @@
                 <form action="/" method="post" class="pure-form"><fieldset>
                     {% csrf_token %}
                     <div id="setactualdate" class="pure-button pure-button-primary">Aktualna data</div>
-                    <br/><br/><br/><br/><br>
+                    <br/><br/><br/>
                     <img src={% static "timetable.png" %}>
                     <div id="setactualposition" class="pure-button pure-button-primary" style="background-color: black">Rozkład jazdy<br>tramwajów</div>
                     <br/><br/>
                     <img src={% static "red_tram_icon.png" %}>
                     <div id="setactualposition" class="pure-button pure-button-primary" style="background-color: crimson">Przewidywana<br>pozycja tramwajów</div>
-                    <br/>
                 </fieldset></form>
             </div>
     </body>
