@@ -157,7 +157,22 @@
                 });
             }
 
+
+
             $( document ).ready(function() {
+                $('#upcoming_departures').on('click', function () {
+                   var tramStopId = $("#trainstop").val();
+                   if (tramStopId.length != 6)
+                       return;
+                   $.ajax({
+                       url: '/map/mapdata/timetable/'+tramStopId+'/',
+                       dataType: 'text',
+                       success:  function(response) {
+                           var text = $.parseHTML(response);
+                           $("#upcomingDepartures").html(text);
+                       }
+                    });
+                });
                 get_buses_markers();
                 setInterval(function(){
                     get_buses_markers()
@@ -211,11 +226,12 @@
                     <div id="setactualdate" class="pure-button pure-button-primary">Aktualna data</div>
                     <br/><br/><br/>
                     <img src={% static "timetable.png" %}>
-                    <div id="setactualposition" class="pure-button pure-button-primary" style="background-color: black">Rozkład jazdy<br>tramwajów</div>
+                    <div id="upcoming_departures" class="pure-button pure-button-primary" style="background-color: black">Rozkład jazdy<br>tramwajów</div>
                     <br/><br/>
                     <img src={% static "red_tram_icon.png" %}>
-                    <div id="setactualposition" class="pure-button pure-button-primary" style="background-color: crimson">Przewidywana<br>pozycja tramwajów</div>
+                    <div id="predicted_positions" class="pure-button pure-button-primary" style="background-color: crimson">Przewidywana<br>pozycja tramwajów</div>
                 </fieldset></form>
+                <div id="upcomingDepartures"></div>
             </div>
     </body>
 </html>

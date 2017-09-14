@@ -1,0 +1,18 @@
+<table class="table table-striped">
+<tbody>
+    <thead>
+    <tr>
+        <td>Godzina</td>
+        <td>Kierunek</td>
+        <td>Linia</td>
+    </tr>
+    </thead>
+    {% for dep in upcoming_departures %}
+    <tr>
+        <td>{{ dep.0 }}</td>
+        <td>{{ dep.1 }}</td>
+        <td>{{ dep.2 }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>

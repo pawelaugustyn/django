@@ -73,11 +73,10 @@ def get_closest_incoming_trams_per_stop(request, stop_id):
         getDay = 0
 
     toparse = json.load(file)
-    results = toparse[stop_id]
-    if str(getDay) not in results:
+    if str(getDay) not in toparse:
         raise Http404("Something went wrong!")
 
-    results = results[str(getDay)]
+    results = toparse[str(getDay)]
 
     try:
         currentTime = float(datetime.datetime.now().time().strftime("%H.%M"))
@@ -93,19 +92,22 @@ def get_closest_incoming_trams_per_stop(request, stop_id):
             continue
         upcoming_departures.append(result)
 
-    sorted(upcoming_departures, key=lambda x: x[1])
+    upcoming_departures.sort()
     directions = open(BASE_DIR+"/application/static/directions.json")
     directions = json.load(directions)
-    upcoming_departures = [(str(x[0]), str(x[1]), str(x[2])) for x in upcoming_departures]
+    upcoming_departures = [[str(x[0]), str(x[1]), str(x[2])] for x in upcoming_departures]
     elems = 5
     for departure in upcoming_departures:
-        if directions[departure[2]]:
-            for direction in directions[departure[2]]:
-                if direction["Symbol"] == departure[1]:
-                    departure[1] = direction["Direction"]
-        departures.append(departure)
         if elems == 0:
             break
+        if len(departure[0].split(".")[1]) == 1:
+            departure[0]=departure[0]+"0"
+        departure[0] = ":".join(departure[0].split("."))
+        if directions[departure[2]]:
+            for direction in directions[departure[2]]:
+                if direction["Symbol"] == departure[1][:6]:
+                    departure[1] = direction["Direction"]
+        departures.append(departure)
         elems -= 1
 
     context = {
