@@ -199,9 +199,9 @@
                                 format: 'dd/MM/yyyy hh:mm:ss'
                             });
                             $( document ).ready(function() {
-                                $('#datetimepicker').data('datetimepicker').setDate($.now());
+                                $('#datetimepicker').data('datetimepicker').setDate(new Date().setMinutes(new Date().getMinutes()-new Date().getTimezoneOffset()));
                                  $('#setactualdate').click(function () {
-                                    $('#datetimepicker').data('datetimepicker').setDate($.now())
+                                    $('#datetimepicker').data('datetimepicker').setDate(new Date().setMinutes(new Date().getMinutes()-new Date().getTimezoneOffset()))
                                  })
                             });
                         </script>

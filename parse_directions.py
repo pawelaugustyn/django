@@ -35,6 +35,7 @@ start_parsing = False
 parser = ParseLine()
 lineNumber = None
 isDirectionDescriber = False
+skipLine = False
 
 for line in to_parse:
     if not start_parsing and "*LL" in line:

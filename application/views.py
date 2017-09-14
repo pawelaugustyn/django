@@ -3,6 +3,8 @@ from django.http import HttpResponse, Http404
 from django.conf import settings
 from django import template
 from re import sub
+import datetime
+from os.path import isfile as isFileAvailable
 import urllib.request
 import json
 
@@ -51,6 +53,66 @@ def index(request):
         'trams_amount': tramIndex
     }
     return render(request, 'application/index.html', context)
+
+def get_closest_incoming_trams_per_stop(request, stop_id):
+    BASE_DIR = getattr(settings, "BASE_DIR")
+    file_directory = BASE_DIR+"/application/timetable/"+stop_id+".json"
+    #file_directory = BASE_DIR+"/application/static/tramstations.json"
+    if not isFileAvailable(file_directory):
+        raise Http404("Something went wrong!")
+    file = open(file_directory, 'r')
+
+    d = datetime.datetime.now()
+
+    weekday = d.isoweekday()
+    if weekday == 6:
+        getDay = 1
+    elif weekday == 7:
+        getDay = 2
+    else:
+        getDay = 0
+
+    toparse = json.load(file)
+    results = toparse[stop_id]
+    if str(getDay) not in results:
+        raise Http404("Something went wrong!")
+
+    results = results[str(getDay)]
+
+    try:
+        currentTime = float(datetime.datetime.now().time().strftime("%H.%M"))
+    except ValueError:
+        raise Http404("Wrong response from the server")
+
+    upcoming_departures = []
+    departures = []
+
+    for result in results:
+        result[0] = float(result[0])
+        if result[0] < currentTime:
+            continue
+        upcoming_departures.append(result)
+
+    sorted(upcoming_departures, key=lambda x: x[1])
+    directions = open(BASE_DIR+"/application/static/directions.json")
+    directions = json.load(directions)
+    upcoming_departures = [(str(x[0]), str(x[1]), str(x[2])) for x in upcoming_departures]
+    elems = 5
+    for departure in upcoming_departures:
+        if directions[departure[2]]:
+            for direction in directions[departure[2]]:
+                if direction["Symbol"] == departure[1]:
+                    departure[1] = direction["Direction"]
+        departures.append(departure)
+        if elems == 0:
+            break
+        elems -= 1
+
+    context = {
+        'upcoming_departures': departures
+    }
+
+    return render(request, 'application/timetable.html', context)
 
 
 def get_trams_per_line(request, tram_id):
