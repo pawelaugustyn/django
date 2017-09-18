@@ -1,7 +1,7 @@
 import json
 import re
 
-to_parse = open("RA170909.TXT", "r")
+to_parse = open("RA170918.TXT", "r")
 
 
 class ParseLine:
@@ -48,7 +48,7 @@ for line in to_parse:
         line=line.lstrip(" ")
         stop_number = line[:6]
         if stop_number not in stops_dictionary:
-            stops_dictionary[stop_number] = open("Timetable/"+stop_number+".json", "w")
+            stops_dictionary[stop_number] = open("application/timetable/"+stop_number+".json", "w")
         read=False
         continue
     if "*OD" in line:

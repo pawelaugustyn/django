@@ -1,7 +1,7 @@
 import re
 import json
 
-to_parse = open("RA170909.TXT", "r")
+to_parse = open("RA170918.TXT", "r")
 
 lines_numbers = []
 
@@ -70,6 +70,6 @@ for line in to_parse:
 
 to_parse.close()
 
-result = open("directions.json", mode='w', encoding='utf-8')
+result = open("application/static/directions.json", mode='w', encoding='utf-8')
 result.write(json.dumps(parser.lines_directions))
 result.close()

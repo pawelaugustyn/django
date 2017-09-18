@@ -1,7 +1,7 @@
 import re
 import json
 
-to_parse = open("RA170909.TXT", "r")
+to_parse = open("RA170918.TXT", "r")
 
 lines_numbers = []
 
@@ -86,6 +86,6 @@ for line in to_parse:
         break
 to_parse.close()
 
-result = open("tramstations.json", mode='w', encoding='utf-8')
+result = open("application/static/tramstations.json", mode='w', encoding='utf-8')
 result.write(json.dumps(parser.trams_stops))
 result.close()
