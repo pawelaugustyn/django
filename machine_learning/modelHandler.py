@@ -1,10 +1,8 @@
-#from sklearn.neural_network import MLPRegressor
 from sklearn.externals import joblib
 
 class modelHandler:
     def __init__(self):
         pass
-        #self.model = MLPRegressor()
 
     def setModel(self, model):
         self.model = model
