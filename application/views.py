@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from django.conf import settings
-from django import template
-from re import sub
 import datetime
 from os.path import isfile as isFileAvailable
 import urllib.request
+from machine_learning import modelHandler
 import json
+
 
 
 def index(request):
@@ -164,3 +164,8 @@ def get_available_directions(request, tram_id):
     to_return = dict()
     to_return['result'] = toparse[tram_id]
     return HttpResponse(json.dumps(to_return))
+
+def get_predicted_arrival_time(request, coordx, coordy, tramid, brigade):
+
+
+    return HttpRespoonse("asfasdfsd")
