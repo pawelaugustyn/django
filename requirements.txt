@@ -4,4 +4,5 @@ psycopg2==2.6.2
 whitenoise==2.0.6
 Pillow==4.2.1
 sklearn==0.0
-scipy=0.19.1
+scipy==0.19.1
+numpy==1.13.1
