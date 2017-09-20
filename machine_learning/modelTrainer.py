@@ -53,7 +53,8 @@ class modelTrainer:
 
     #scale training features with standard method
     def scaleFeatures(self):
-        self.features = RobustScaler().fit_transform(self.features)
+        self.scaler = RobustScaler().fit(self.features)
+        self.features = self.scaler.transform(self.features)
 
     #scale training targets (time) to number of seconds since midnight
     def scaleTargets(self):
@@ -82,6 +83,10 @@ class modelTrainer:
     def getModelScore(self):
         return self.model.score(self.features, self.targets)
 
+    #get scaler
+    def getScaler(self):
+        return self.scaler
+
 
 if __name__ == "__main__":
     np.seterr(all='warn')
@@ -97,3 +102,9 @@ if __name__ == "__main__":
         mh = modelHandler()
         mh.setModel(model)
         mh.dumpModel(tramline)
+
+        scaler = mt.getScaler()
+
+        mh = modelHandler()
+        mh.setModel(scaler)
+        mh.dumpScalerModel(tramline)
