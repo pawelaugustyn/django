@@ -1,18 +1,21 @@
+{% load static %}
 <table class="table table-striped">
 <tbody>
     <thead>
     <tr>
-        <td>Godzina</td>
+        <td style="width: 70px;">Godzina</td>
         <td>Kierunek</td>
-        <td>Linia</td>
+        <td style="width: 30px;">Linia</td>
     </tr>
     </thead>
     {% for dep in upcoming_departures %}
     <tr>
-        <td>{{ dep.0 }}</td>
+        <td>{{ dep.0 }} <span style="color: {{ dep.4 }}; font-weight: bold;">{{ dep.3 }}</span></td>
         <td>{{ dep.1 }}</td>
         <td>{{ dep.2 }}</td>
     </tr>
     {% endfor %}
 </tbody>
 </table>
+
+<img src="{% static "red_tram_icon.png" %}" style="height: 24px;" /><span style="color: red;">- przewidywany czas przyjazdu</span>

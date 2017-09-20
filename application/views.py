@@ -3,14 +3,17 @@ from django.http import HttpResponse, Http404
 from django.conf import settings
 import datetime
 from os.path import isfile as isFileAvailable
-import urllib.request
-from machine_learning import modelHandler
+import urllib
+from machine_learning.modelHandler import modelHandler
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
 import json
 
 
 
 def index(request):
-    data = urllib.request.urlopen(getattr(settings, "API_WARSAW_URL_TRAMS"))
+    data = urllib.urlopen(getattr(settings, "API_WARSAW_URL_TRAMS"))
 
     toparse = json.load(data)
     trams_lines_list = []
@@ -103,10 +106,20 @@ def get_closest_incoming_trams_per_stop(request, stop_id):
         if len(departure[0].split(".")[1]) == 1:
             departure[0]=departure[0]+"0"
         departure[0] = ":".join(departure[0].split("."))
+        changed = False
         if directions[departure[2]]:
             for direction in directions[departure[2]]:
                 if direction["Symbol"] == departure[1][:6]:
                     departure[1] = direction["Direction"]
+                    changed=True
+        if not changed:
+            continue
+        departure.append(str(_get_predicted_arrival_time(stop_id, departure[0], departure[2])))
+        if departure[3][0] != "-":
+            departure[3] = "+"+departure[3]
+            departure.append("green")
+        else:
+            departure.append("red")
         departures.append(departure)
         elems -= 1
 
@@ -118,7 +131,7 @@ def get_closest_incoming_trams_per_stop(request, stop_id):
 
 
 def get_trams_per_line(request, tram_id):
-    data = urllib.request.urlopen(getattr(settings, "API_WARSAW_URL_TRAMS"))
+    data = urllib.urlopen(getattr(settings, "API_WARSAW_URL_TRAMS"))
     toparse = json.load(data)
     trams_list = dict()
     trams_list['result'] = []
@@ -165,7 +178,42 @@ def get_available_directions(request, tram_id):
     to_return['result'] = toparse[tram_id]
     return HttpResponse(json.dumps(to_return))
 
-def get_predicted_arrival_time(request, coordx, coordy, tramid, brigade):
+def _get_predicted_arrival_time(stop_id, time, line):
+    data = open('application/static/tramstations.json', 'r')
+    toparse = json.load(data)
+    loaded_stop = None
+    if line not in toparse:
+        raise Http404('Something went wrong!')
+    toparse = toparse[line]
+    for stop in toparse:
+        if stop['Number'] == stop_id:
+            loaded_stop = dict()
+            loaded_stop = stop
+            break
+    if loaded_stop is None:
+        raise Http404('Something went wrong!')
+    lon = loaded_stop['X']
+    lat = loaded_stop['Y']
 
 
-    return HttpRespoonse("asfasdfsd")
+    time = 3600*int(time.split(":")[0])+60*int(time.split(":")[1])
+    timesArray = []
+    difference = 86400
+    for brigadeNr in range(1, 100):
+        mh = modelHandler()
+        mh.loadModel(line)
+        model = mh.getModel()
+        mhs = modelHandler()
+        mhs.loadScalerModel(line)
+        scaler = mhs.getModel()
+        d = np.array([[lat, lon, brigadeNr]])
+        X = pd.DataFrame(d)
+        X = scaler.transform(X)
+        result = model.predict(X)
+        time_from_midnight = int(result[0])%86400
+        timesArray.append(time_from_midnight)
+    timesArray.sort()
+    for result in timesArray:
+        if abs(result - time) < abs(difference):
+            difference = result - time
+    return int(difference/60)

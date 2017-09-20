@@ -11,13 +11,13 @@ class modelHandler:
         return self.model
 
     def loadModel(self, tramline):
-        self.model = joblib.load('models/MLPRegressor_' + tramline + '.pkl')
+        self.model = joblib.load('machine_learning/models/MLPRegressor_' + tramline + '.pkl')
 
     def dumpModel(self, tramline):
-        joblib.dump(self.model, 'models/MLPRegressor_' + tramline + '.pkl')
+        joblib.dump(self.model, 'machine_learning/models/MLPRegressor_' + tramline + '.pkl')
 
     def loadScalerModel(self, tramline):
-        self.model = joblib.load('models/Scaler_' + tramline + '.pkl')
+        self.model = joblib.load('machine_learning/models/Scaler_' + tramline + '.pkl')
 
     def dumpScalerModel(self, tramline):
-        joblib.dump(self.model, 'models/Scaler_' + tramline + '.pkl')
+        joblib.dump(self.model, 'machine_learning/models/Scaler_' + tramline + '.pkl')

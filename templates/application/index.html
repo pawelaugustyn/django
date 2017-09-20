@@ -13,6 +13,7 @@
             body, html {
                 width: 100%;
                 height: 100%;
+                min-height: 100%
                 margin: 0;
             }
             div#menu {
@@ -21,6 +22,7 @@
                 top: 0;
                 left: 0;
                 width: 250px;
+                height: 100%;
                 background-color: ghostwhite;
                 height: 100%;
                 margin: 0;
@@ -91,8 +93,10 @@
             $('#trainstop').on('change', function () {
                 var val = this.value;
                 nullStationMarker();
-                if (val == 0)
+                if (val == 0) {
+                    $("#upcomingDepartures").text("");
                     return 0;
+                }
                 $.ajax({
                     url: '/map/mapdata/stops/'+$('#line').val()+'/'+val+'/',
                     dataType: 'text',
@@ -149,7 +153,8 @@
                             lines[index] = vehicle.Lines;
                             infoWindows[index] = new google.maps.InfoWindow({
                                 content: '<div><b>Linia nr '+vehicle.Lines+'</b></div><br />'+
-                                    'Ostatnia aktualizacja: '+vehicle.Time
+                                    'Ostatnia aktualizacja: '+vehicle.Time+'<br />'+
+                                    'Brygada: ' + vehicle.Brigade
                             });
                             markers[index].addListener('click', function() {
                                 infoWindows[index].open(map, markers[index]);
@@ -158,8 +163,6 @@
                     }
                 });
             }
-
-
 
             $( document ).ready(function() {
                 $('#upcoming_departures').on('click', function () {
@@ -178,7 +181,11 @@
                 get_buses_markers();
                 setInterval(function(){
                     get_buses_markers()
-                },10000)});
+                },10000);
+                setInterval(function(){
+                    $('#datetimepicker').data('datetimepicker').setDate(new Date().setMinutes(new Date().getMinutes()-new Date().getTimezoneOffset()))
+                }, 1000);
+            });
         }
         </script>
         <script async defer
@@ -187,28 +194,32 @@
             <div id="menu">
             <img src={% static "logo.jpg" %}>
             <br/><br/>
-            <div><img src={% static "tram-icon.png" %}>
-                <u><i><font color="black">Aktualna pozycja tramwajów</font></i></u>
-                <br>Wybierz linię</div>
+            <div><p><img src={% static "tram-icon.png" %} />
+                <u><i><font color="black">Aktualna pozycja tramwajów</font></i></u></p>
+                Wybierz linię</div>
                 <select name="line" id="line" title="Line number">
                     <option value="0">---</option>
                     {% for tram in trams_lines %}
                     <option value="{{ tram }}"{% if tram == request.POST.line %} selected{% endif %}>{{ tram }}</option>
                     {% endfor %}
                 </select>
-            <br /><br/>
-                <div><img src={% static "small_tram_station_icon.png" %}> Wybierz przystanek</div>
+            <br /><br>
+                <div> <p><img src={% static "tram_station_icon.png" %} /><u><i><font color="black">Najbliższe odjazdy z przystanku</font></i></u></p>Wybierz przystanek</div>
                 <select name="trainstop" id="trainstop" title="Station name">
                 </select>
-            <br />
-                <div><img src={% static "filled_arrow.png" %}> Wybierz kierunek</div>
-                <select name="direction" id="direction" title="Direction">
-                </select>
-            <br />
-                <div>Wybierz datę</div>
-                <div id="datetimepicker" class="input-append date">
-                    <input type="text" />
-                        <span class="add-on">
+            
+                <form action="/" method="post" class="pure-form"><fieldset>
+                    {% csrf_token %}
+                    <!--<div id="setactualdate" class="pure-button pure-button-primary">Aktualna data</div>-->
+                    <br/>
+                    <img src={% static "timetable.png" %} />
+                    <div id="upcoming_departures" class="pure-button pure-button-primary" style="background-color: black">Pokaż najbliższe<br>odjazdy</div>
+                    <br/>
+                </fieldset></form>
+                <div id="upcomingDepartures"></div>
+                <div id="datetimepicker" class="input-append time" style="position: absolute; bottom: 0; height: 50px;">
+                    <input type="text" style="font-size: 20px; height: 40px;"/>
+                        <span class="add-on" style="height: 40px;">
                         <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
                         </span>
                         <script type="text/javascript">
@@ -216,24 +227,10 @@
                                 format: 'dd/MM/yyyy hh:mm:ss'
                             });
                             $( document ).ready(function() {
-                                $('#datetimepicker').data('datetimepicker').setDate(new Date().setMinutes(new Date().getMinutes()-new Date().getTimezoneOffset()));
-                                 $('#setactualdate').click(function () {
-                                    $('#datetimepicker').data('datetimepicker').setDate(new Date().setMinutes(new Date().getMinutes()-new Date().getTimezoneOffset()))
-                                 })
+                                $('#datetimepicker').data('datetimepicker').setDate(new Date().setMinutes(new Date().getMinutes()-new Date().getTimezoneOffset()))
                             });
                         </script>
                 </div>
-                <form action="/" method="post" class="pure-form"><fieldset>
-                    {% csrf_token %}
-                    <div id="setactualdate" class="pure-button pure-button-primary">Aktualna data</div>
-                    <br/><br/><br/>
-                    <img src={% static "timetable.png" %}>
-                    <div id="upcoming_departures" class="pure-button pure-button-primary" style="background-color: black">Rozkład jazdy<br>tramwajów</div>
-                    <br/><br/>
-                    <img src={% static "red_tram_icon.png" %}>
-                    <div id="predicted_positions" class="pure-button pure-button-primary" style="background-color: crimson">Przewidywana<br>pozycja tramwajów</div>
-                </fieldset></form>
-                <div id="upcomingDepartures"></div>
             </div>
     </body>
 </html>
