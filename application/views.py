@@ -23,7 +23,10 @@ def index(request):
     if "result" in toparse:
         trams_data = toparse["result"]
         for tram in trams_data:
-            number = int(tram["Lines"])
+            try:
+                number = int(tram["Lines"])
+            except ValueError as e:
+                continue
             tram["index"] = tramIndex
             tramIndex += 1
             vehicles_online.append(tram)
@@ -31,17 +34,6 @@ def index(request):
                 continue
             trams_lines_list.append(number)
 
-        """if request.method == "POST":
-            if "line" in request.POST:
-                try:
-                    line = int(request.POST["line"])
-                    for tram in trams_data:
-                        if line != int(tram["Lines"]):
-                            continue
-                        tram["id"] = len(vehicles_online)
-                        vehicles_online.append(tram)
-                except ValueError:
-                    pass"""
 
     trams_lines_list.sort()
     trams_lines_list = [str(x) for x in trams_lines_list]
